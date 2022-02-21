@@ -1,5 +1,0 @@
-settings.py
-*.log
-.idea/
-env/
-__pycache__/
