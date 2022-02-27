@@ -99,28 +99,38 @@ def send_cat_picture(update, context):
     # playtime()
 
 
-# def calculator(update, context):
-#     text = update.message.text.split(' ')[1]
-#     if len(text) != 3:
-#         update.message.reply_text('Строка должна быть длинной 3 символа')
-#         raise ValueError('Больше знаков, чем допустимо программой')
-#     else:
-#         if text[0].isdigit() and text[2].isdigit():
-#             if text[1] == "+":
-#                 update.message.reply_text(float(text[0]) + float(text[2]))
-#             if text[1] == "-":
-#                 update.message.reply_text(float(text[0]) - float(text[2]))
-#             if text[1] == "*":
-#                 update.message.reply_text(float(text[0]) * float(text[2]))
-#             if text[1] == "/":
-#                 if text[2] == '0':
-#                     update.message.reply_text('На ноль делить нельзя')
-#                     raise ZeroDivisionError('поделили на ноль')
-#                 else:
-#                     update.message.reply_text(float(text[0]) / float(text[2]))
-#         else:
-#             update.message.reply_text('введите числовое значение')
-#             raise TypeError('ввели не число')
+def calculator(update, context):
+    delim = str
+    operations = ('+', '/', '**', '-', '*')
+    a = update.message.text.split(' ')[1]
+    try:
+
+        for i in range(len(a)):
+            if a[i] in operations and a[i] != "*":
+                delim = a[i]
+            elif a[i] == "*":
+                if a[i + 1] == "*":
+                    delim = "**"
+                    break
+                else:
+                    delim = "*"
+
+        numbs = a.split(delim)
+        if delim == "+":
+            update.message.reply_text(str((int(numbs[0]) + int(numbs[1]))))
+        elif delim == "/":
+            try:
+                update.message.reply_text(str((int(numbs[0]) / int(numbs[1]))))
+            except ZeroDivisionError:
+                update.message.reply_text("На ноль делить нельзя")
+        elif delim == "**":
+            update.message.reply_text(str((int(numbs[0]) ** int(numbs[1]))))
+        elif delim == "-":
+            update.message.reply_text(str((int(numbs[0]) - int(numbs[1]))))
+        elif delim == "*":
+            update.message.reply_text(str((int(numbs[0]) * int(numbs[1]))))
+    except ValueError:
+        update.message.reply_text("Введите числа")
 
 
 def word_counter(update, context):
@@ -188,7 +198,7 @@ def main():
     dp.add_handler(CommandHandler("guess", digit_guess, run_async=True))
     dp.add_handler(CommandHandler("cat", send_cat_picture))
     # dp.add_handler(CommandHandler("cities", cities_game, run_async=True))
-    # dp.add_handler(CommandHandler("calc", calculator, run_async=True))
+    dp.add_handler(CommandHandler("calc", calculator, run_async=True))
     dp.add_handler(MessageHandler(Filters.text, echo_talking, run_async=True))
 
     logging.info('бот стартовал')
